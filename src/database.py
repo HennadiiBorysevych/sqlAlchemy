@@ -1,10 +1,11 @@
+from typing import Annotated
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession,  async_sessionmaker
-from sqlalchemy.orm import Session, sessionmaker
+from sqlalchemy.orm import Session, sessionmaker, DeclarativeBase
 from sqlalchemy import create_engine, text,  MetaData, URL
 from config import settings
 
 engine = create_engine(
-    url=settings.DATABASE_URL_psycopg,
+    url=settings.DATABASE_URL_psycopg2,
     echo=True,
     pool_size=5,
     max_overflow=10,
@@ -32,3 +33,14 @@ async def get_async_session() -> AsyncSession:
     async with engine.connect() as conn:
         result = await conn.execute(text("SELECT version()"))
         print(f"result: {result=}")
+
+
+session = sessionmaker(
+    engine,
+    expire_on_commit=False
+)
+
+str_200 = Annotated[str, 200]
+
+class Base(DeclarativeBase):
+    pass
